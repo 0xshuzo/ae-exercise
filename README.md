@@ -28,3 +28,7 @@ Sobald die Bins klein genug werden, verwende Robin Hood Sorting:\
 Zunächst wird ein Buffer, welcher z.B. 2.5 mal die Größe des zu sortierenden Bins besitzt, allokiert. Daraufhin werden die Elemente an die jeweilige Position im Buffer geschrieben. Die Position ergibt sich, indem der minimale Wert in diesem Bin, welcher möglich wäre, vom aktuellen Element abgezogen wird und schließlich ein Bitshift ausgeführt wird. Geshiftet wird so, dass alle bisher betrachteten Bits verloren gehen.\
 Falls kein Platz an dieser Position existiert, platziere das Element hinter allen Elementen, welche kleiner oder gleich groß sind und bei bzw. nach dieser Position liegen. Dies wird auch als Robin Hood Hashing bezeichnet.\
 Schließlich werden die Elemente zurück in den jeweiligen Bin geschrieben, wobei alle leeren Einträge des Buffers ignoriert werden.
+
+
+## Generelle Überlegungen Radix Sort
+- Durch die Zufälligkeit der gegebenen Integer ist die Wahrscheinlichkeit hoch, dass die Bins immer ungefähr die gleiche Größe haben, da die Wahrscheinlichkeit für eine 0 oder 1 beim nächsten betrachteten Bit nahe von 0.5 liegt.

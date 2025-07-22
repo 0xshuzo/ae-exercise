@@ -1,21 +1,31 @@
 @inproceedings{sanders_multicoreradix,
-    abstract = {We present a fast radix sorting algorithm that builds upon a microarchitecture-aware variant of counting sort. Taking advantage of virtual memory and making use of write-combining yields a per-pass throughput corresponding to at least 89{\%} of the system's peak memory bandwidth. Our implementation outperforms Intel's recently published radix sort by a factor of 1.64. It also compares favorably to the reported performance of an algorithm for Fermi GPUs when data-transfer overhead is included. These results indicate that scalar, bandwidth-sensitive sorting algorithms remain competitive on current architectures. Various other memory-intensive applications can benefit from the techniques described herein.},
-    publisher = {Springer Berlin Heidelberg},
-    year = {2011},
+    title = {Engineering a Multi-core Radix Sort},
     editor = {Jeannot, Emmanuel
 and Namyst, Raymond
 and Roman, Jean},
-    author = {Wassenberg, Jan
-and Sanders, Peter},
     pages = {160--169},
-    title = {Engineering a Multi-core Radix Sort},
-    booktitle = {Euro-Par 2011 Parallel Processing},
     isbn = {978-3-642-23397-5},
     address = {Berlin, Heidelberg},
+    abstract = {We present a fast radix sorting algorithm that builds upon a microarchitecture-aware variant of counting sort. Taking advantage of virtual memory and making use of write-combining yields a per-pass throughput corresponding to at least 89{\%} of the system's peak memory bandwidth. Our implementation outperforms Intel's recently published radix sort by a factor of 1.64. It also compares favorably to the reported performance of an algorithm for Fermi GPUs when data-transfer overhead is included. These results indicate that scalar, bandwidth-sensitive sorting algorithms remain competitive on current architectures. Various other memory-intensive applications can benefit from the techniques described herein.},
+    year = {2011},
+    author = {Wassenberg, Jan
+and Sanders, Peter},
+    publisher = {Springer Berlin Heidelberg},
+    booktitle = {Euro-Par 2011 Parallel Processing},
 }
 
 @conference{Robin Hood Hash,
-    address = {https://www.youtube.com/watch?v=paxIkKBzqBU&t=1340s},
     title = {Robin Hood Hashing},
     author = {Marshall Lochbaum},
+    address = {https://www.youtube.com/watch?v=paxIkKBzqBU&t=1340s},
+}
+
+@misc{wassenberg2010fasterradixsortvirtual,
+    year = {2010},
+    primaryclass = {cs.DS},
+    url = {https://arxiv.org/abs/1008.2849},
+    eprint = {1008.2849},
+    author = {Jan Wassenberg and Peter Sanders},
+    archiveprefix = {arXiv},
+    title = {Faster Radix Sort via Virtual Memory and Write-Combining},
 }
