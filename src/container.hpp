@@ -27,6 +27,8 @@ class container {
   // necessarily have to be vectors.
   std::vector<std::vector<element_type>> placeholder_;
 
+  std::vector<const std::uint64_t*> blocks;
+
  public:
   [[nodiscard]] auto to_view() const {
     return std::views::join(placeholder_);
