@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <iostream>
 #include <random>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -23,10 +22,8 @@ auto generate_uniform(std::size_t n) {
   return input;
 }
 
-void runExperiment(std::string_view name,
-                   auto container_factory,
-                   auto sort_func,
-                   int argc, char **argv) {
+void runExperiment(std::string_view name, auto container_factory,
+                   auto sort_func, int argc, char **argv) {
   std::size_t n = 1e6;
   std::size_t num_threads = 1;
 
@@ -34,8 +31,8 @@ void runExperiment(std::string_view name,
     n = std::stol(argv[1]);
     num_threads = std::stoi(argv[2]);
   } else {
-    // The number of threads is just here in case you want to parallelize your code.
-    // It's not currently used.
+    // The number of threads is just here in case you want to parallelize your
+    // code. It's not currently used.
     std::cerr << "Number of threads not specified!\n";
     std::cerr << "Usage: " << argv[0] << " <n> <num_threads>\n";
     return;
@@ -59,11 +56,14 @@ void runExperiment(std::string_view name,
       break;
     }
 
-    std::chrono::steady_clock::time_point ctor = std::chrono::steady_clock::now();
-    auto to_sort = container_factory(input);
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point ctor =
+        std::chrono::steady_clock::now();
+    auto to_sort = container_factory(input, num_threads);
+    std::chrono::steady_clock::time_point begin =
+        std::chrono::steady_clock::now();
     sort_func(to_sort);
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point end =
+        std::chrono::steady_clock::now();
     totalNanoseconds +=
         std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin)
             .count();
@@ -78,26 +78,22 @@ void runExperiment(std::string_view name,
     }
   }
 
-  std::cout << "RESULT"
-            << " name=" << name << " n=" << n << " t=" << num_threads
-            << " iterations=" << iterations
+  std::cout << "RESULT" << " name=" << name << " n=" << n
+            << " t=" << num_threads << " iterations=" << iterations
             << " durationNanoseconds=" << totalNanoseconds / iterations
             << " totalDurationNanoseconds=" << totalNanoseconds
-            << " constructorNanoseconds=" << totalNanosecondsFactory / iterations
+            << " constructorNanoseconds="
+            << totalNanosecondsFactory / iterations
             << " totalConstructorNanoseconds=" << totalNanosecondsFactory
             << '\n';
 }
 
-}  // unnamed namespace
+} // unnamed namespace
 
 int main(int argc, char **argv) {
-  runExperiment("sort",
-                [](const auto& data) {
-                  return ae::container(data);
-                },
-                [](ae::container& data) {
-                  ae::sorter{}.sort(data);
-                }, argc, argv);
+  runExperiment(
+      "sort", [](auto &data, auto num_threads) { return ae::container(data); },
+      [](ae::container &data) { ae::sorter{}.sort(data); }, argc, argv);
 
   return 0;
 }
