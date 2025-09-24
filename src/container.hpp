@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <ranges>
 #include <span>
@@ -15,7 +16,7 @@ class container {
 public:
   using element_type = std::uint64_t;
 
-  explicit container(std::span<const element_type> data);
+  explicit container(std::span<const element_type> data, std::size_t num_threads);
 
   // TODO You may also add additional functions (or data members).
 
