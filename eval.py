@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 import subprocess
 import argparse
 from pathlib import Path
+import math
+import numpy as np
 
 def run_experiment(output_file, build_dir):
     # The number of threads is not currently used, it's just here in case you want to parallelize your code.
-    for threads in [1]:
-        for size in [1e2, 1e3, 1e4 + 1, 1e5, 1e6 - 1, 1e7]:
+    for threads in [1, 2, 4, 8, 12, 16]:
+        for size in np.logspace(4, 8, num=16):
             print("Measuring p=" + str(threads) + " n=" + str(size))
             executable = Path(build_dir) / "Sorter"
             returncode = subprocess.call([executable, str(size), str(threads)], stdout=output_file)
@@ -42,31 +44,44 @@ def make_plot(result_file):
             plots[t][name + " (constructor)"].append((n, constructorNanoseconds / n))
             maxDuration = max(maxDuration, max(durationNanoseconds, constructorNanoseconds))
 
-    fig, axs = plt.subplots(len(plots))
+        # Create a grid of subplots; always get a flat list of axes
+    num = len(plots)
+    cols = 2 if num > 2 else 1               # 1 Spalte für bis zu 2 Plots, sonst 2 Spalten
+    rows = math.ceil(num / cols)
 
-    for i, t in enumerate(plots):
+    fig, axs = plt.subplots(
+        rows, cols,
+        squeeze=False,                        # immer 2D-Array zurück
+        figsize=(8*cols, 4*rows),             # mehr Platz pro Subplot
+        constrained_layout=True               # sorgt für „entspanntere“ Abstände
+    )
+    axs = axs.flatten()
+
+    # Iterate deterministically over thread counts
+    for i, t in enumerate(sorted(plots.keys())):
+        ax = axs[i]
+
+        # Only use base algorithm names (exclude the constructor variants)
+        base_names = [k for k in plots[t].keys() if not k.endswith(" (constructor)")]
+
+        # Plot each base and its constructor series
+        for base in base_names:
+            # sort by n to get nice lines
+            xs, ys = zip(*sorted(plots[t][base], key=lambda p: p[0]))
+            ax.plot(xs, ys, label=base, marker='x')
+
+            xs2, ys2 = zip(*sorted(plots[t][base + " (constructor)"], key=lambda p: p[0]))
+            ax.plot(xs2, ys2, label=base + " (constructor)", marker='+')
+
         if len(plots) > 1:
-            axs[i].set_title(f"#p={t}")
-            for name in plots[t]:
-                axs[i].plot(*zip(*plots[t][name]), label=name, marker='x')
-                axs[i].plot(*zip(*plots[t][name + " (constructor)"]), label=name + " (constructor)", marker='+')
-                axs[i].set_xscale('log')
-        else:
-            axs.plot(*zip(*plots[t][name]), label=name, marker='x')
-            axs.plot(*zip(*plots[t][name + " (constructor)"]), label=name + " (constructor)", marker='+')
-            axs.set_xscale('log')
-
-    if len(plots) > 1:
-        for ax in axs.flat:
-            ax.set(xlabel='n', ylabel='Running time per element (ns)')
-            ax.legend()
-    else:
-        axs.set(xlabel='n', ylabel='Running time per element (ns)')
-        axs.legend()
+            ax.set_title(f"#p={t}")
+        ax.set_xscale('log')
+        ax.set(xlabel='n', ylabel='Running time per element (ns)')
+        ax.legend()
 
     plt.tight_layout()
-
     plt.savefig("plot.pdf")
+
 
 def main():
     parser = argparse.ArgumentParser(description='evaluation tools')
