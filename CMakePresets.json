@@ -1,7 +1,16 @@
 {
-	"version": 2,
-	"configurePresets": [
-		{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "binaryDir": "${sourceDir}/build/debug",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      }
+    },
+    {
 			"name": "release",
 			"binaryDir": "${sourceDir}/build",
 			"generator": "Unix Makefiles",
@@ -10,11 +19,9 @@
 				"CMAKE_EXPORT_COMPILE_COMMANDS": true
 			}
 		}
-	],
-	"buildPresets": [
-		{
-			"name": "release",
-			"configurePreset": "release"
-		}
-	]
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "debug" },
+    { "name": "release", "configurePreset": "release"}
+  ]
 }
