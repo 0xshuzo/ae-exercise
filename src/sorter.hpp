@@ -14,7 +14,9 @@ public:
     bool is_null = true;
   };
 
-  void sort(container &data);
+  void sort(container &data, std::size_t num_threads);
+  void sort_linear(container &data);
+  void sort_parallel(container &data, std::size_t num_threads);
 
 private:
   static int start_bit_for_block(const std::vector<element_type> &a);

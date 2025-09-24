@@ -2,8 +2,12 @@
 #include "container.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
+#include <thread>
 #include <vector>
 
 namespace ae {
@@ -18,7 +22,14 @@ int sorter::start_bit_for_block(const std::vector<element_type> &a) {
   return std::numeric_limits<element_type>::digits - 1 - std::countl_zero(span);
 }
 
-void sorter::sort(container &data) {
+void sorter::sort(container &data, std::size_t num_threads) {
+  if (num_threads == 1)
+    sort_linear(data);
+  else
+    sort_parallel(data, num_threads);
+}
+
+void sorter::sort_linear(container &data) {
   for (auto &block : data.blocks) {
     // skip possibly empty blocks
     if (block.empty())
@@ -28,7 +39,33 @@ void sorter::sort(container &data) {
     if (bit0 >= 0)
       msd_radix_sort(block, 0, static_cast<int>(block.size()) - 1, bit0);
   }
+}
 
+void sorter::sort_parallel(container &data, std::size_t num_threads) {
+  std::atomic<std::size_t> next{0};
+  std::vector<std::thread> workers;
+  workers.reserve(num_threads);
+
+  for (std::size_t w = 0; w < num_threads; ++w) {
+    workers.emplace_back([&] {
+      for (;;) {
+        const std::size_t i = next.fetch_add(1, std::memory_order_relaxed);
+        if (i >= data.blocks.size())
+          break;
+
+        auto &block = data.blocks[i];
+        if (block.size() <= 1)
+          continue;
+
+        const int bit0 = start_bit_for_block(block);
+        if (bit0 >= 0)
+          msd_radix_sort(block, 0, static_cast<int>(block.size()) - 1, bit0);
+      }
+    });
+  }
+
+  for (auto &th : workers)
+    th.join();
 }
 
 void sorter::robin_hood_sort(std::vector<element_type> &block, int left,
@@ -81,7 +118,7 @@ void sorter::msd_radix_sort(std::vector<element_type> &block, int left,
   if (left > right || bit < 0)
     return;
 
-  if (right - left + 1 <= 32) {
+  if (right - left + 1 <= 16) {
     robin_hood_sort(block, left, right);
     return;
   }
