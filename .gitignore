@@ -82,3 +82,7 @@ build/
 
 # VSCode
 .vscode/
+
+# Measurement results
+plot.pdf
+result.txt
