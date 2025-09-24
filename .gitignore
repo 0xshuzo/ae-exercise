@@ -79,3 +79,6 @@ fabric.properties
 
 # Exclude build folder
 build/
+
+# VSCode
+.vscode/
