@@ -86,3 +86,6 @@ build/
 # Measurement results
 plot.pdf
 result.txt
+
+# Submission file
+submission.zip
